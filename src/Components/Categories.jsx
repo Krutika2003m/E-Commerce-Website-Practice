@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 const images = [
   "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80",
@@ -13,6 +15,9 @@ const images = [
 function Categories() {
   const [categories, setCategories] = useState([]);
 
+  //  navigate function
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetch("https://dummyjson.com/products/categories")
       .then((response) => response.json())
@@ -24,42 +29,37 @@ function Categories() {
       });
   }, []);
 
+  const viewProducts = (category) => {
+    navigate(`/products?category=${category}`);
+  };
+
   return (
     <div className="categories">
-
       <h2>Featured Categories</h2>
 
       <div className="category-list">
-
         {categories.slice(0, 8).map((category, index) => {
-
           const name = category.name || category;
+          const slug = category.slug || category;
 
           return (
             <div
-              className="category-card"
-              key={index}
+              className="category-card"  key={index}
               style={{
                 backgroundImage: `url("${images[index]}")`,
               }}
             >
-
               <div className="category-content">
-
                 <h3>{name}</h3>
 
-                <button>
+                <button onClick={() => viewProducts(slug)}>
                   View Products
                 </button>
-
               </div>
-
             </div>
           );
         })}
-
       </div>
-
     </div>
   );
 }
