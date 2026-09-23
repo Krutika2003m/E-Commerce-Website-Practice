@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart,FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
@@ -111,6 +111,11 @@ function Header() {
         )}
 
       </div>
+
+      <Link to="/wishlist" className="wishlist-link">
+        <FaHeart className="heart" />
+        Wishlist
+      </Link>
 
       {/* Cart */}
       <Link to="/cart" className="cart">

@@ -134,6 +134,56 @@
   margin: 12px 0;
   color: #111;
 }
+.product-card {
+  position: relative;
+}
+
+/* Wishlist Heart */
+.product-card .wishlist-btn {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 40px;
+  height: 40px;
+
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+
+  color: #ff69b4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  z-index: 10;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover */
+.product-card .wishlist-btn:hover {
+  background: white;
+  color: #ff1493;
+  transform: scale(1.1);
+}
+
+/* Selected wishlist */
+.product-card .wishlist-btn.active {
+  color: #ff1493;
+  background: white;
+}
+
 
 /* Loading / Error */
 

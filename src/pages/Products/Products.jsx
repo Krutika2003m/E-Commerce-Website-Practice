@@ -1,6 +1,8 @@
+
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Header from "../../Components/Header";
+import { FaHeart } from "react-icons/fa";
 import "./products.css";
 
 function Products() {
@@ -12,6 +14,54 @@ function Products() {
 
   const categoryFromURL = searchParams.get("category");
   const searchText = searchParams.get("search") || "";
+
+  // Main Categories
+  const categoryGroups = {
+    Electronics: [
+      "smartphones",
+      "tablets",
+      "laptops",
+      "mobile-accessories",
+    ],
+
+    "Men's": [
+      "mens-shirts",
+      "mens-shoes",
+      "mens-watches",
+    ],
+
+    "Women's": [
+      "womens-dresses",
+      "womens-shoes",
+      "womens-bags",
+      "womens-jewellery",
+    ],
+
+    Home: [
+      "furniture",
+      "home-decoration",
+      "kitchen-accessories",
+    ],
+
+    Beauty: [
+      "beauty",
+      "skin-care",
+      "fragrances",
+    ],
+
+    Sports: [
+      "sports-accessories",
+    ],
+
+    Groceries: [
+      "groceries",
+    ],
+
+    Vehicles: [
+      "vehicle",
+      "motorcycle",
+    ],
+  };
 
   // Filters
   const [selectedCategory, setSelectedCategory] = useState(
@@ -29,16 +79,38 @@ function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  const categories = [
-    "beauty",
-    "fragrances",
-    "furniture",
-    "groceries",
-    "home-decoration",
-    "kitchen-accessories",
-    "laptops",
-    "mens-shirts",
-  ];
+  // Wishlist
+const [wishlist, setWishlist] = useState(() => {
+  return JSON.parse(localStorage.getItem("wishlist")) || [];
+});
+
+// Add / Remove Wishlist
+const toggleWishlist = (product) => {
+  const exists = wishlist.some(
+    (item) => item.id === product.id
+  );
+
+  let updatedWishlist;
+
+  if (exists) {
+    // Remove product from wishlist
+    updatedWishlist = wishlist.filter(
+      (item) => item.id !== product.id
+    );
+  } else {
+    // Add product to wishlist
+    updatedWishlist = [...wishlist, product];
+  }
+
+  setWishlist(updatedWishlist);
+
+  localStorage.setItem(
+    "wishlist",
+    JSON.stringify(updatedWishlist)
+  );
+};
+
+
 
   // Fetch products
   useEffect(() => {
@@ -65,7 +137,7 @@ function Products() {
 
         setProducts(data.products);
 
-        // Start from page 1 for every new search
+        // Start from page 1
         setCurrentPage(1);
 
         setLoading(false);
@@ -89,9 +161,16 @@ function Products() {
 
   // Filtering
   let filteredProducts = products.filter((product) => {
-    const categoryMatch =
-      selectedCategory === "all" ||
-      product.category === selectedCategory;
+    let categoryMatch = true;
+
+    if (selectedCategory !== "all") {
+      const selectedSubCategories =
+        categoryGroups[selectedCategory];
+
+      categoryMatch = selectedSubCategories
+        ? selectedSubCategories.includes(product.category)
+        : product.category === selectedCategory;
+    }
 
     const brandMatch =
       selectedBrand === "all" ||
@@ -155,7 +234,7 @@ function Products() {
 
         <h1>Products</h1>
 
-        {/* Show search text */}
+        {/* Search Text */}
         {searchText && (
           <h3>
             Search results for: "{searchText}"
@@ -180,14 +259,16 @@ function Products() {
                 All Categories
               </option>
 
-              {categories.map((category) => (
-                <option
-                  key={category}
-                  value={category}
-                >
-                  {category}
-                </option>
-              ))}
+              {Object.keys(categoryGroups).map(
+                (category) => (
+                  <option
+                    key={category}
+                    value={category}
+                  >
+                    {category}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
@@ -278,7 +359,7 @@ function Products() {
 
         </div>
 
-        {/* Product count */}
+        {/* Product Count */}
         <p>
           Showing {filteredProducts.length} products
         </p>
@@ -290,36 +371,46 @@ function Products() {
             <h2>No products found</h2>
           ) : (
             currentProducts.map((product) => (
-              <div
-                className="product-card"
-                key={product.id}
-              >
-                <img
-                  src={product.thumbnail}
-                  alt={product.title}
-                />
+             <div className="product-card" key={product.id}>
 
-                <h3>{product.title}</h3>
+  <button
+    className={`wishlist-btn ${
+      wishlist.some((item) => item.id === product.id)
+        ? "active"
+        : ""
+    }`}
+    onClick={() => toggleWishlist(product)}
+  >
+    <FaHeart />
+  </button>
 
-                <p>{product.category}</p>
+  <img
+    src={product.thumbnail}
+    alt={product.title}
+  />
 
-                <p>
-                  Brand: {product.brand || "N/A"}
-                </p>
+  <h3>{product.title}</h3>
 
-                <p>
-                  Rating: ⭐ {product.rating}
-                </p>
+  <p>{product.category}</p>
 
-                <h4>${product.price}</h4>
+  <p>
+    Brand: {product.brand || "N/A"}
+  </p>
 
-                <Link
-                  to={`/products/${product.id}`}
-                  className="view-details"
-                >
-                  View Details
-                </Link>
-              </div>
+  <p>
+    Rating: ⭐ {product.rating}
+  </p>
+
+  <h4>${product.price}</h4>
+
+  <Link
+    to={`/products/${product.id}`}
+    className="view-details"
+  >
+    View Details
+  </Link>
+
+</div>
             ))
           )}
 
