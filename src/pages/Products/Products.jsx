@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import Header from "../../Components/Header";
 import "./products.css";
 
@@ -12,6 +11,7 @@ function Products() {
   const [searchParams] = useSearchParams();
 
   const categoryFromURL = searchParams.get("category");
+  const searchText = searchParams.get("search") || "";
 
   // Filters
   const [selectedCategory, setSelectedCategory] = useState(
@@ -40,12 +40,22 @@ function Products() {
     "mens-shirts",
   ];
 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(
-          "https://dummyjson.com/products?limit=0"
-        );
+        setLoading(true);
+        setError("");
+
+        let url;
+
+        if (searchText.trim() !== "") {
+          url = `https://dummyjson.com/products/search?q=${searchText}`;
+        } else {
+          url = "https://dummyjson.com/products?limit=0";
+        }
+
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error("Something went wrong");
@@ -54,6 +64,10 @@ function Products() {
         const data = await response.json();
 
         setProducts(data.products);
+
+        // Start from page 1 for every new search
+        setCurrentPage(1);
+
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -62,8 +76,9 @@ function Products() {
     };
 
     fetchProducts();
-  }, []);
+  }, [searchText]);
 
+  // Brands
   const brands = [
     ...new Set(
       products
@@ -111,10 +126,7 @@ function Products() {
     filteredProducts.sort((a, b) => b.rating - a.rating);
   }
 
-  // -------------------------
   // Pagination
-  // -------------------------
-
   const startIndex =
     (currentPage - 1) * productsPerPage;
 
@@ -143,6 +155,13 @@ function Products() {
 
         <h1>Products</h1>
 
+        {/* Show search text */}
+        {searchText && (
+          <h3>
+            Search results for: "{searchText}"
+          </h3>
+        )}
+
         {/* Filters */}
         <div className="filters">
 
@@ -157,7 +176,9 @@ function Products() {
                 setCurrentPage(1);
               }}
             >
-              <option value="all">All Categories</option>
+              <option value="all">
+                All Categories
+              </option>
 
               {categories.map((category) => (
                 <option
@@ -181,7 +202,9 @@ function Products() {
                 setCurrentPage(1);
               }}
             >
-              <option value="all">All Brands</option>
+              <option value="all">
+                All Brands
+              </option>
 
               {brands.map((brand) => (
                 <option

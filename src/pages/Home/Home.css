@@ -9,7 +9,8 @@ body {
   background-color: #f5f5f5;
 }
 
-/*  header css*/
+/* HEADER */
+
 .header {
   height: 80px;
   background-color: #ab7e7e;
@@ -21,34 +22,40 @@ body {
 
   padding: 10px 30px;
 }
+
 /* Header links */
 
 .logo {
   color: white;
-  text-decoration: none ;
+  text-decoration: none;
   font-size: 22px;
   font-weight: bold;
 }
-.home{
+
+.home {
   color: white;
-  text-decoration: none ;
+  text-decoration: none;
   font-size: 15px;
 }
 
 .products-link {
-  color: white ;
-  text-decoration: none ;
+  color: white;
+  text-decoration: none;
   font-size: 15px;
   font-weight: 500;
 }
 
 .logo:hover,
-.products-link:hover {
-  color: #ffe4e4 ;
-  text-decoration: none ;
+.products-link:hover,
+.home:hover {
+  color: #ffe4e4;
+  text-decoration: none;
 }
 
+/* ================= SEARCH ================= */
+
 .search {
+  position: relative;
   display: flex;
   width: 50%;
 }
@@ -56,6 +63,15 @@ body {
 .search input {
   width: 100%;
   padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 3px;
+  font-size: 16px;
+}
+
+.search input:focus {
+  border: none;
+  outline: none;
 }
 
 .search button {
@@ -63,18 +79,92 @@ body {
   border: none;
   background-color: orange;
   cursor: pointer;
+  border-radius: 3px;
+  font-size: 16px;
 }
 
-.cart {
+.search button:hover {
+  background-color: #ff8c00;
+}
+
+/* ================= SEARCH SUGGESTIONS ================= */
+
+.search-results {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 300px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.search-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: rgb(253, 250, 250);
+  gap: 10px;
+
+  padding: 10px;
+
   text-decoration: none;
-  cursor: pointer;
+  color: black;
+
+  border-bottom: 1px solid #eee;
 }
 
-/* banner css */
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background-color: #f5f5f5;
+}
+
+.search-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.search-item span {
+  font-size: 14px;
+}
+
+/* ================= CART ================= */
+
+.cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: white;
+}
+
+.cart-count {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+
+  background-color: red;
+  color: white;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+/* ================= BANNER ================= */
+
 .banner {
   width: 90%;
   height: 450px;
@@ -94,10 +184,13 @@ body {
 .next {
   position: absolute;
   top: 50%;
+
   background-color: black;
   color: white;
+
   border: none;
   padding: 10px 15px;
+
   cursor: pointer;
 }
 
@@ -109,43 +202,7 @@ body {
   right: 15px;
 }
 
-
-
-/*Servh product css */
-.search {
-  position: relative;
-}
-
-.search-results {
-  position: absolute;
-  top: 45px;
-  left: 0;
-  width: 300px;
-  background: white;
-  border: 1px solid #ddd;
-  z-index: 1000;
-}
-
-.search-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  text-decoration: none;
-  color: black;
-}
-
-.search-item:hover {
-  background: #f5f5f5;
-}
-
-.search-item img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-/* category css */
+/* CATEGORIES */
 
 .categories {
   padding: 40px 5%;
@@ -175,10 +232,12 @@ body {
 .category-content {
   width: 100%;
   height: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   background: rgba(0, 0, 0, 0.45);
   color: white;
 }
@@ -190,9 +249,11 @@ body {
 
 .category-content button {
   padding: 10px 20px;
+
   border: none;
   background: white;
   color: black;
+
   cursor: pointer;
   font-size: 16px;
 }
@@ -202,11 +263,11 @@ body {
   color: white;
 }
 
-
-/*Footer Css */
+/*FOOTER */
 
 .footer {
   width: 100%;
+
   background-color: #b18484;
   color: white;
 
@@ -214,9 +275,9 @@ body {
   grid-template-columns: 1fr 2fr 1fr;
 
   padding: 25px 60px;
+
   box-sizing: border-box;
 }
-
 
 /* LEFT */
 
@@ -237,7 +298,12 @@ body {
   margin-left: 100px;
 }
 
+.footer-left a:hover {
+  text-decoration: underline;
+}
+
 /* CENTER */
+
 .footer-center {
   text-align: center;
 }
@@ -251,6 +317,7 @@ body {
   margin: 4px 0;
   font-size: 16px;
 }
+
 /* RIGHT */
 
 .footer-right {
@@ -268,16 +335,15 @@ body {
   font-size: 16px;
 }
 
+/* SOCIAL ICONS */
+
 .social-icons {
   display: flex;
   gap: 15px;
   margin-top: 20px;
-  
 }
 
 .icons svg {
   font-size: 22px;
   cursor: pointer;
-  gap: 20px;
 }
-
