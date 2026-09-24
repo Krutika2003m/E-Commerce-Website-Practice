@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Header from "../../Components/Header";
+import { FaHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 
 // Electronics categories
@@ -21,6 +22,7 @@ function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState("");
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   // Fetch product details
   useEffect(() => {
@@ -38,6 +40,14 @@ function ProductDetails() {
 
         setProduct(data);
         setSelectedImage(data.images[0]);
+        const wishlist =
+  JSON.parse(localStorage.getItem("wishlist")) || [];
+
+const alreadyAdded = wishlist.some(
+  (item) => item.id === data.id
+);
+
+setIsWishlisted(alreadyAdded);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -93,6 +103,34 @@ function ProductDetails() {
     fetchRecommendedProducts();
   }
 }, [product]);
+
+const handleWishlist = () => {
+  let wishlist =
+    JSON.parse(localStorage.getItem("wishlist")) || [];
+
+  const alreadyAdded = wishlist.some(
+    (item) => item.id === product.id
+  );
+
+  if (alreadyAdded) {
+    // Remove product
+    wishlist = wishlist.filter(
+      (item) => item.id !== product.id
+    );
+
+    setIsWishlisted(false);
+  } else {
+    // Add product
+    wishlist.push(product);
+
+    setIsWishlisted(true);
+  }
+
+  localStorage.setItem(
+    "wishlist",
+    JSON.stringify(wishlist)
+  );
+};
 
   // Add to cart
   const handleAddToCart = () => {
@@ -161,13 +199,23 @@ function ProductDetails() {
         {/* LEFT SIDE */}
         <div className="product-image-section">
 
-          <img
-            className="main-image"
-            src={selectedImage}
-            alt={product.title}
-          />
+  {/* Wishlist Button */}
+  <button
+    className={`details-wishlist ${
+      isWishlisted ? "active" : ""
+    }`}
+    onClick={handleWishlist}
+  >
+    <FaHeart />
+  </button>
 
-          <div className="thumbnails">
+  <img
+    className="main-image"
+    src={selectedImage}
+    alt={product.title}
+  />
+
+  <div className="thumbnails">
 
             {product.images.map((image, index) => (
 
@@ -187,9 +235,14 @@ function ProductDetails() {
         {/* RIGHT SIDE */}
         <div className="product-info">
 
-          <h1>{product.title}</h1>
+  <div className="title-row">
 
-          <p className="category">
+    <h1>{product.title}</h1>
+
+
+  </div>
+
+  <p className="category">
             <strong>Category:</strong> {product.category}
           </p>
 

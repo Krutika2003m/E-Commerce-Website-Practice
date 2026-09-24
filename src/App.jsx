@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Products from "./pages/Products/Products";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import Footer from "./Components/Footer";
 import Cart from "./pages/Cart/Cart";
 import Checkout from "./pages/Checkout/Checkout";
 import Wishlist from "./pages/Wishlist/Wishlist";
@@ -24,6 +25,8 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
 
       </Routes>
+
+      <Footer />
     </BrowserRouter>
   );
 }
