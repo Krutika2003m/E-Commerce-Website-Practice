@@ -1,7 +1,7 @@
 
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Header from "../../Components/Header";
+import Header from "../../Components/Header/Header";
 import { FaHeart } from "react-icons/fa";
 import "./products.css";
 
@@ -9,13 +9,10 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [searchParams] = useSearchParams();
-
   const categoryFromURL = searchParams.get("category");
   const searchText = searchParams.get("search") || "";
 
-  // Main Categories
   const categoryGroups = {
     Electronics: [
       "smartphones",
@@ -63,28 +60,21 @@ function Products() {
     ],
   };
 
-  // Filters
   const [selectedCategory, setSelectedCategory] = useState(
     categoryFromURL || "all"
   );
 
   const [selectedBrand, setSelectedBrand] = useState("all");
-
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-
   const [sortBy, setSortBy] = useState("default");
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  // Wishlist
 const [wishlist, setWishlist] = useState(() => {
   return JSON.parse(localStorage.getItem("wishlist")) || [];
 });
 
-// Add / Remove Wishlist
 const toggleWishlist = (product) => {
   const exists = wishlist.some(
     (item) => item.id === product.id
@@ -93,12 +83,10 @@ const toggleWishlist = (product) => {
   let updatedWishlist;
 
   if (exists) {
-    // Remove product from wishlist
     updatedWishlist = wishlist.filter(
       (item) => item.id !== product.id
     );
   } else {
-    // Add product to wishlist
     updatedWishlist = [...wishlist, product];
   }
 
@@ -111,8 +99,6 @@ const toggleWishlist = (product) => {
 };
 
 
-
-  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -136,8 +122,6 @@ const toggleWishlist = (product) => {
         const data = await response.json();
 
         setProducts(data.products);
-
-        // Start from page 1
         setCurrentPage(1);
 
         setLoading(false);
@@ -151,15 +135,27 @@ const toggleWishlist = (product) => {
   }, [searchText]);
 
   // Brands
-  const brands = [
-    ...new Set(
-      products
-        .map((product) => product.brand)
-        .filter((brand) => brand)
-    ),
-  ];
+const brands = [
+  ...new Set(
+    products
+      .filter((product) => {
+        if (selectedCategory === "all") {
+          return true;
+        }
 
-  // Filtering
+        const selectedSubCategories =
+          categoryGroups[selectedCategory];
+
+        return selectedSubCategories
+          ? selectedSubCategories.includes(product.category)
+          : product.category === selectedCategory;
+      })
+      .map((product) => product.brand)
+      .filter((brand) => brand)
+  ),
+];
+
+ 
   let filteredProducts = products.filter((product) => {
     let categoryMatch = true;
 
@@ -241,10 +237,7 @@ const toggleWishlist = (product) => {
           </h3>
         )}
 
-        {/* Filters */}
         <div className="filters">
-
-          {/* Category */}
           <div className="filter-group">
             <label>Category</label>
 
@@ -272,7 +265,6 @@ const toggleWishlist = (product) => {
             </select>
           </div>
 
-          {/* Brand */}
           <div className="filter-group">
             <label>Brand</label>
 
@@ -298,7 +290,6 @@ const toggleWishlist = (product) => {
             </select>
           </div>
 
-          {/* Minimum Price */}
           <div className="filter-group">
             <label>Min Price</label>
 
@@ -313,7 +304,6 @@ const toggleWishlist = (product) => {
             />
           </div>
 
-          {/* Maximum Price */}
           <div className="filter-group">
             <label>Max Price</label>
 
@@ -351,9 +341,6 @@ const toggleWishlist = (product) => {
                 Price: High → Low
               </option>
 
-              <option value="popularity">
-                Popularity
-              </option>
             </select>
           </div>
 
@@ -416,7 +403,6 @@ const toggleWishlist = (product) => {
 
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination">
 

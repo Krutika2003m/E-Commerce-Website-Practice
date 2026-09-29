@@ -1,19 +1,14 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../Components/Header";
+import Header from "../../Components/Header/Header";
 import "./Checkout.css";
 
 function Checkout() {
 
   const navigate = useNavigate();
-
-  // Cart
   const [cart, setCart] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-
-  // Address form
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -28,14 +23,22 @@ function Checkout() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+
   useEffect(() => {
+  const cartData =
+    JSON.parse(localStorage.getItem("cart")) || [];
+  setCart(cartData);
 
-    const data =
-      JSON.parse(localStorage.getItem("cart")) || [];
+  const savedAddresses =
+    JSON.parse(localStorage.getItem("addresses")) || [];
 
-    setCart(data);
+  setAddresses(savedAddresses);
 
-  }, []);
+  if (savedAddresses.length > 0) {
+    setSelectedAddress(savedAddresses[0].id);
+  }
+
+}, []);
 
   const subtotal = cart.reduce(
     (total, item) =>
@@ -48,14 +51,12 @@ function Checkout() {
   const total = subtotal + delivery;
 
   const clearForm = () => {
-
     setName("");
     setPhone("");
     setAddress("");
     setCity("");
     setState("");
     setPincode("");
-
     setEditId(null);
   };
 
@@ -98,7 +99,6 @@ function Checkout() {
       newAddress
     ]);
 
-    // Select new address
     setSelectedAddress(newAddress.id);
 
     clearForm();
@@ -107,7 +107,6 @@ function Checkout() {
   };
 
 
-  // Edit address
   const editAddress = (item) => {
 
     setName(item.name);
@@ -123,7 +122,6 @@ function Checkout() {
   };
 
 
-  // Update address
   const updateAddress = () => {
 
     if (
@@ -168,61 +166,85 @@ function Checkout() {
 
     });
 
-    setAddresses(updatedAddresses);
+  setAddresses(updatedAddresses);
 
-    clearForm();
-    setShowForm(false);
-    setError("");
-  };
+localStorage.setItem(
+  "addresses",
+  JSON.stringify(updatedAddresses)
+);
 
-  // Place order
+clearForm();
+setShowForm(false);
+setError("");
+};
+
   const placeOrder = () => {
-    setError("");
-    setSuccess("");
+  setError("");
+  setSuccess("");
 
-    // Check cart
-    if (cart.length === 0) {
-      setError("Your cart is empty.");
-      return;
-    }
-    // Check address
-    if (!selectedAddress) {
-      setError("Please select a delivery address.");
-      return;
-    }
 
-    // Check payment
-    if (!payment) {
-      setError("Please select a payment method.");
-      return;
-    }
+  if (cart.length === 0) {
+    setError("Your cart is empty.");
+    return;
+  }
 
-    setSuccess("Order placed successfully!");
+  
+  if (!selectedAddress) {
+    setError("Please select a delivery address.");
+    return;
+  }
 
-    localStorage.removeItem("cart");
+  if (!payment) {
+    setError("Please select a payment method.");
+    return;
+  }
 
-    setTimeout(() => {
-      navigate("/products");
-    }, 2000);
+  const selectedAddressData = addresses.find(
+    (item) => item.id === selectedAddress
+  );
+
+  
+  const newOrder = {
+    orderId: "ORD" + Date.now(),
+    date: new Date().toLocaleDateString(),
+    status: "Order Placed",
+    items: cart,
+    address: selectedAddressData,
+    payment: payment,
+    subtotal: subtotal,
+    delivery: delivery,
+    total: total,
   };
 
+  const existingOrders =
+    JSON.parse(localStorage.getItem("orders")) || [];
+
+  existingOrders.push(newOrder);
+
+  localStorage.setItem(
+    "orders",
+    JSON.stringify(existingOrders)
+  );
+
+  localStorage.removeItem("cart");
+
+  setSuccess("Order placed successfully!");
+
+  setTimeout(() => {
+    navigate("/orders");
+  }, 2000);
+};
 
   return (
     <>
       <Header />
 
       <div className="checkout">
-
         <h1>Checkout</h1>
 
-        {/* DELIVERY ADDRESS*/}
-
         <div className="card">
-
           <div className="title">
-
             <h2>1. Delivery Address</h2>
-
             <button className="add-btn"
               onClick={() => {
                 clearForm(); setShowForm(true); setError("");
@@ -235,14 +257,10 @@ function Checkout() {
 
           {addresses.length === 0 && !showForm && (
 
-            <p className="no-address">
-              No delivery address added.
-            </p>
-
+            <p className="no-address">   No delivery address added. </p>
           )}
 
           {addresses.map((item) => (
-
             <div className={
               selectedAddress === item.id
                 ? "address selected"
@@ -282,19 +300,13 @@ function Checkout() {
 
           ))}
 
-          {/* Address Form */}
-
           {showForm && (
 
             <div className="form">
-
               <h3>  {editId ? "Edit Address" : "Add New Address"} </h3>
 
-
               {error && (
-                <p className="error">
-                  {error}
-                </p>
+                <p className="error">  {error}  </p>
               )}
 
 
@@ -351,11 +363,8 @@ function Checkout() {
 
 
               <button
-                className="cancel-btn"
-                onClick={() => {
-                  clearForm();
-                  setShowForm(false);
-                  setError("");
+                className="cancel-btn"  onClick={() => {
+                  clearForm();  setShowForm(false);  setError("");
                 }}
               >
                 Cancel
@@ -367,15 +376,9 @@ function Checkout() {
 
         </div>
 
-
-        {/* PAYMENT METHOD */}
-
         <div className="card">
-
           <h2>2. Payment Method</h2>
-
           <label className="payment">
-
             <input type="radio" name="payment" value="cod" checked={payment === "cod"}
               onChange={(e) =>
                 setPayment(e.target.value)
@@ -386,7 +389,6 @@ function Checkout() {
 
 
           <label className="payment">
-
             <input  type="radio"  name="payment"  value="upi"  checked={payment === "upi"}
               onChange={(e) =>
                 setPayment(e.target.value)
@@ -408,51 +410,23 @@ function Checkout() {
 
         </div>
 
-
-        {/* ORDER SUMMARY */}
-
         <div className="card">
-
           <h2>3. Order Summary</h2>
-
 
           {cart.length === 0 ? (
 
-            <p className="no-address">
-              Your cart is empty.
-            </p>
-
+            <p className="no-address">  Your cart is empty.  </p>
           ) : (
 
             <>
-              {/* Products */}
-
               {cart.map((item) => (
-
-                <div
-                  className="product"
-                  key={item.id}
-                >
-
-                  <img
-                    src={item.thumbnail}
-                    alt={item.title}
-                  />
+                <div  className="product"  key={item.id}   >
+                  <img  src={item.thumbnail}  alt={item.title}  />
 
                   <div className="product-info">
-
-                    <h4>
-                      {item.title}
-                    </h4>
-
-                    <p>
-                      Quantity: {item.quantity}
-                    </p>
-
-                    <p>
-                      ₹{item.price}
-                    </p>
-
+                    <h4>  {item.title}</h4>
+                    <p>  Quantity: {item.quantity}  </p>
+                    <p>  ₹{item.price}  </p>
                   </div>
 
                   <strong>
@@ -462,36 +436,24 @@ function Checkout() {
                       item.quantity
                     ).toFixed(2)}
                   </strong>
-
                 </div>
 
               ))}
 
-              {/* Price */}
-
               <div className="price">
-
                 <p> <span>Subtotal</span>
-                  <b> ₹{subtotal.toFixed(2)} </b>
-                </p>
+                <b> ₹{subtotal.toFixed(2)} </b>  </p>
 
                 <p> <span>Delivery</span>
-                  <b>  ₹{delivery.toFixed(2)} </b>
-                </p>
+                <b> ₹{delivery.toFixed(2)} </b>  </p>
 
                 <h3>  <span>Total</span>
-                  <b> ₹{total.toFixed(2)}  </b>
-                </h3>
-
+                <b> ₹{total.toFixed(2)}  </b>  </h3>
               </div>
-
-              {/* Error */}
 
               {error && (
                 <p className="error">  {error}  </p>
               )}
-
-              {/* Success Popup */}
 
               {success && (
                 <div className="success-popup">
@@ -506,7 +468,6 @@ function Checkout() {
                   </div>
                 </div>
               )}
-              {/* Place Order */}
 
               <button className="place-order" onClick={placeOrder}>
                 Place Order

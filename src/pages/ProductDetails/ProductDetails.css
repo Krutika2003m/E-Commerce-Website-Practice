@@ -6,7 +6,6 @@
   margin: auto;
 }
 
-/* LEFT IMAGE */
 .product-image-section {
   width: 50%;
   text-align: center;
@@ -74,7 +73,6 @@
   border: 2px solid #333;
 }
 
-/* RIGHT SIDE */
 
 .product-info {
   width: 50%;
@@ -101,7 +99,6 @@
   color: #555;
   margin: 20px 0;
 }
-/* QUANTITY */
 
 .quantity-section {
   display: flex;
@@ -131,7 +128,6 @@
   text-align: center;
 }
 
-/* ADD CART */
 .add-cart {
   margin-top: 25px;
   padding: 12px 30px;
@@ -148,7 +144,6 @@
 }
 
 
-/* EXTRA INFORMATION */
 .extra-product-info {
   max-width: 1100px;
   margin: 20px auto 50px;
@@ -160,7 +155,6 @@
   margin-bottom: 25px;
 }
 
-/* INFORMATION GRID */
 
 .info-grid {
   display: grid;
@@ -180,8 +174,6 @@
 }
 
 
-/* TAGS */
-
 .tags-section {
   margin-top: 30px;
 }
@@ -199,8 +191,6 @@
 }
 
 
-/* DIMENSIONS */
-
 .dimensions-section {
   margin-top: 30px;
 }
@@ -209,8 +199,6 @@
   display: inline-block;
   margin-right: 30px;
 }
-
-/* REVIEWS */
 
 .reviews-section {
   margin-top: 35px;
@@ -236,8 +224,6 @@
 .review-card small {
   color: #777;
 }
-
-/* RECOMMENDED PRODUCTS */
 
 .recommended-section {
   margin-top: 50px;
@@ -309,10 +295,6 @@
 }
 
 
-
-
-
-
 .product-image-section {
   position: relative;
 }
@@ -320,8 +302,8 @@
 .details-wishlist {
   position: absolute;
 
-  top: 15px;
-  right: 45px;
+  top: 20px;
+  right: 70px;
 
   width: 45px;
   height: 45px;
@@ -355,3 +337,76 @@
 .details-wishlist.active {
   color: #ff1493;
 }
+
+@media (max-width: 900px) {
+
+  .product-details {
+    flex-direction: column;
+    padding: 25px;
+  }
+
+  .product-image-section {
+    width: 100%;
+  }
+
+  .product-info {
+    width: 100%;
+  }
+
+  .main-image {
+    max-width: 450px;
+    margin: auto;
+  }
+}
+@media (max-width: 400px) {
+
+  .main-image {
+    height: 220px;
+  }
+
+  .product-info h1 {
+    font-size: 22px;
+  }
+}
+
+.quantity-selector {
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  margin-top: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.quantity-selector button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background-color: #f8f8f8;
+  color: #333;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quantity-selector button:hover {
+  background-color: #eeeeee;
+}
+
+.quantity-selector input {
+  width: 52px;
+  height: 42px;
+  border: none;
+  border-left: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
+  outline: none;
+  background-color: #fff;
+  color: #222;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+

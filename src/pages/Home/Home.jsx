@@ -1,6 +1,6 @@
-import Header from "../../Components/Header";
-import Banner from "../../Components/Banner"
-import Categories from "../../Components/Categories"
+import Header from "../../Components/Header/Header";
+import Caursel from "../../Components/Coursel/Coursel"
+import Categories from "../../Components/Categories/Categories"
 import "./Home.css"
 
 function Home() {
@@ -8,11 +8,9 @@ function Home() {
     <>
       <Header />
 
-      <Banner />
+      <Caursel />
 
       <Categories />
-
-    
     </>
   );
 }

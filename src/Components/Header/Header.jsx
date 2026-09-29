@@ -1,22 +1,18 @@
 import { useState, useEffect } from "react";
-import { FaShoppingCart,FaHeart } from "react-icons/fa";
+import { FaShoppingCart, FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import "./Header.css"
 
 function Header() {
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
-
-  // Cart count
   const [cartCount, setCartCount] = useState(0);
-
   const navigate = useNavigate();
 
-  // Get cart count
   const getCartCount = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     let count = 0;
-
     cart.forEach((item) => {
       count += item.quantity;
     });
@@ -24,7 +20,6 @@ function Header() {
     setCartCount(count);
   };
 
-  // Show suggestions while typing
   useEffect(() => {
     if (search.trim() === "") {
       setProducts([]);
@@ -35,10 +30,12 @@ function Header() {
       .then((res) => res.json())
       .then((data) => {
         setProducts(data.products);
+      })
+      .catch((error) => {
+        console.log("Search error:", error);
       });
   }, [search]);
 
-  // Cart count update
   useEffect(() => {
     getCartCount();
 
@@ -76,32 +73,21 @@ function Header() {
 
       <div className="search">
 
-        <input
-          type="text"
-          placeholder="Search products"
-          value={search}
+        <input  type="text"  placeholder="Search products"  value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <button onClick={handleSearch}>
-          Search
-        </button>
+        <button onClick={handleSearch}>  Search  </button>
 
-        {/* Suggestions */}
         {products.length > 0 && (
           <div className="search-results">
 
             {products.slice(0, 5).map((product) => (
-              <Link
-                to={`/products/${product.id}`}
-                key={product.id}
-                className="search-item"
+              <Link  to={`/products/${product.id}`}
+                key={product.id}  className="search-item"
                 onClick={() => setSearch("")}
               >
-                <img
-                  src={product.thumbnail}
-                  alt={product.title}
-                />
+                <img  src={product.thumbnail}  alt={product.title}  />
 
                 <span>{product.title}</span>
               </Link>
@@ -114,17 +100,16 @@ function Header() {
 
       <Link to="/wishlist" className="wishlist-link">
         <FaHeart className="heart" />
-        Wishlist
       </Link>
 
-      {/* Cart */}
+      <Link to="/orders" className="orders-link">
+        Orders
+      </Link>
+
       <Link to="/cart" className="cart">
 
         <FaShoppingCart />
 
-        <span>Cart</span>
-
-        {/* Count */}
         {cartCount > 0 && (
           <span className="cart-count">
             {cartCount}

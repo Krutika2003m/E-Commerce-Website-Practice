@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import Header from "../../Components/Header";
+import Header from "../../Components/Header/Header";
 import { FaHeart } from "react-icons/fa";
 import "./ProductDetails.css";
 
-// Electronics categories
 const electronicsCategories = [
   "laptops",
   "mobile-accessories",
@@ -24,7 +23,10 @@ function ProductDetails() {
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  // Fetch product details
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -41,13 +43,13 @@ function ProductDetails() {
         setProduct(data);
         setSelectedImage(data.images[0]);
         const wishlist =
-  JSON.parse(localStorage.getItem("wishlist")) || [];
+          JSON.parse(localStorage.getItem("wishlist")) || [];
 
-const alreadyAdded = wishlist.some(
-  (item) => item.id === data.id
-);
+        const alreadyAdded = wishlist.some(
+          (item) => item.id === data.id
+        );
 
-setIsWishlisted(alreadyAdded);
+        setIsWishlisted(alreadyAdded);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -58,81 +60,76 @@ setIsWishlisted(alreadyAdded);
     fetchProduct();
   }, [id]);
 
-  // Fetch recommended products
- useEffect(() => {
-  const fetchRecommendedProducts = async () => {
-    try {
-      // Electronics categories
-      const electronicsCategories = [
-        "laptops",
-        "tablets",
-        "mobile-accessories",
-        "smartphones"
-      ];
+  useEffect(() => {
+    const fetchRecommendedProducts = async () => {
+      try {
+        const electronicsCategories = [
+          "laptops",
+          "tablets",
+          "mobile-accessories",
+          "smartphones"
+        ];
 
-      if (!electronicsCategories.includes(product.category)) {
-        setRecommendedProducts([]);
-        return;
+        if (!electronicsCategories.includes(product.category)) {
+          setRecommendedProducts([]);
+          return;
+        }
+
+        const response = await fetch(
+          "https://dummyjson.com/products?limit=0"
+        );
+
+        const data = await response.json();
+
+        const recommended = data.products
+          .filter(
+            (item) =>
+              electronicsCategories.includes(item.category) &&
+              item.id !== product.id
+          )
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4);
+
+        setRecommendedProducts(recommended);
+      } catch (error) {
+        console.log(
+          "Error fetching recommended products:",
+          error
+        );
       }
+    };
 
-      const response = await fetch(
-        "https://dummyjson.com/products?limit=0"
-      );
-
-      const data = await response.json();
-
-      const recommended = data.products
-        .filter(
-          (item) =>
-            electronicsCategories.includes(item.category) &&
-            item.id !== product.id
-        )
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 4);
-
-      setRecommendedProducts(recommended);
-    } catch (error) {
-      console.log(
-        "Error fetching recommended products:",
-        error
-      );
+    if (product) {
+      fetchRecommendedProducts();
     }
-  };
+  }, [product]);
 
-  if (product) {
-    fetchRecommendedProducts();
-  }
-}, [product]);
+  const handleWishlist = () => {
+    let wishlist =
+      JSON.parse(localStorage.getItem("wishlist")) || [];
 
-const handleWishlist = () => {
-  let wishlist =
-    JSON.parse(localStorage.getItem("wishlist")) || [];
-
-  const alreadyAdded = wishlist.some(
-    (item) => item.id === product.id
-  );
-
-  if (alreadyAdded) {
-    // Remove product
-    wishlist = wishlist.filter(
-      (item) => item.id !== product.id
+    const alreadyAdded = wishlist.some(
+      (item) => item.id === product.id
     );
 
-    setIsWishlisted(false);
-  } else {
-    // Add product
-    wishlist.push(product);
+    if (alreadyAdded) {
+      wishlist = wishlist.filter(
+        (item) => item.id !== product.id
+      );
 
-    setIsWishlisted(true);
-  }
+      setIsWishlisted(false);
+    } else {
+      wishlist.push(product);
 
-  localStorage.setItem(
-    "wishlist",
-    JSON.stringify(wishlist)
-  );
-};
+      setIsWishlisted(true);
+    }
 
-  // Add to cart
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify(wishlist)
+    );
+  };
+
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -151,14 +148,18 @@ const handleWishlist = () => {
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    // Update cart count
     window.dispatchEvent(new Event("cartUpdated"));
 
     navigate("/cart");
   };
 
   if (loading) {
-    return <h2 className="message">Loading product...</h2>;
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+        <p>Loading product...</p>
+      </div>
+    );
   }
 
   if (error) {
@@ -173,7 +174,6 @@ const handleWishlist = () => {
     <>
       <Header />
 
-      {/* BREADCRUMB */}
       <div className="breadcrumb">
 
         <Link to="/">Home</Link>
@@ -196,33 +196,27 @@ const handleWishlist = () => {
 
       <div className="product-details">
 
-        {/* LEFT SIDE */}
         <div className="product-image-section">
 
-  {/* Wishlist Button */}
-  <button
-    className={`details-wishlist ${
-      isWishlisted ? "active" : ""
-    }`}
-    onClick={handleWishlist}
-  >
-    <FaHeart />
-  </button>
+          <button
+            className={`details-wishlist ${isWishlisted ? "active" : ""
+              }`}
+            onClick={handleWishlist}
+          >
+            <FaHeart />
+          </button>
 
-  <img
-    className="main-image"
-    src={selectedImage}
-    alt={product.title}
-  />
+          <img
+            className="main-image"
+            src={selectedImage}
+            alt={product.title}
+          />
 
-  <div className="thumbnails">
+          <div className="thumbnails">
 
             {product.images.map((image, index) => (
 
-              <img
-                key={index}
-                src={image}
-                alt={product.title}
+              <img key={index}  src={image} alt={product.title}
                 onClick={() => setSelectedImage(image)}
               />
 
@@ -232,17 +226,16 @@ const handleWishlist = () => {
 
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="product-info">
 
-  <div className="title-row">
+          <div className="title-row">
 
-    <h1>{product.title}</h1>
+            <h1>{product.title}</h1>
 
 
-  </div>
+          </div>
 
-  <p className="category">
+          <p className="category">
             <strong>Category:</strong> {product.category}
           </p>
 
@@ -284,36 +277,52 @@ const handleWishlist = () => {
             {product.shippingInformation}
           </p>
 
-          {/* QUANTITY */}
           <div className="quantity-section">
 
             <strong>Quantity:</strong>
 
             <div className="quantity-selector">
 
-              <button
-                onClick={() =>
-                  setQuantity(
-                    quantity > 1 ? quantity - 1 : 1
-                  )
-                }
-              >
-                -
-              </button>
+  <button
+    onClick={() =>
+      setQuantity(quantity > 1 ? quantity - 1 : 1)
+    }
+  >
+    -
+  </button>
 
-              <span>{quantity}</span>
+  <input
+    type="text"
+    value={quantity}
+    onChange={(e) => {
+      const value = e.target.value;
 
-              <button
-                onClick={() => {
-                  if (quantity < product.stock) {
-                    setQuantity(quantity + 1);
-                  }
-                }}
-              >
-                +
-              </button>
+      if (value === "") {
+        setQuantity("");
+        return;
+      }
 
-            </div>
+      if (/^\d+$/.test(value)) {
+        const number = Number(value);
+
+        if (number >= 1 && number <= product.stock) {
+          setQuantity(number);
+        }
+      }
+    }}
+  />
+
+  <button
+    onClick={() => {
+      if (quantity < product.stock) {
+        setQuantity(quantity + 1);
+      }
+    }}
+  >
+    +
+  </button>
+
+</div>
 
           </div>
 
@@ -327,7 +336,6 @@ const handleWishlist = () => {
         </div>
       </div>
 
-      {/* PRODUCT INFORMATION */}
       <div className="extra-product-info">
 
         <h2>Product Information</h2>
@@ -356,7 +364,6 @@ const handleWishlist = () => {
 
         </div>
 
-        {/* TAGS */}
         <div className="tags-section">
 
           <h3>Tags</h3>
@@ -375,7 +382,6 @@ const handleWishlist = () => {
 
         </div>
 
-        {/* DIMENSIONS */}
         <div className="dimensions-section">
 
           <h3>Dimensions</h3>
@@ -397,7 +403,6 @@ const handleWishlist = () => {
 
         </div>
 
-        {/* REVIEWS */}
         <div className="reviews-section">
 
           <h2>Customer Reviews</h2>
@@ -433,7 +438,6 @@ const handleWishlist = () => {
 
           ))}
 
-          {/* RECOMMENDED PRODUCTS */}
           {recommendedProducts.length > 0 && (
 
             <div className="recommended-section">

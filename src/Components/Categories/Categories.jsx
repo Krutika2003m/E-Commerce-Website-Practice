@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import "./Categories.css";
+
 const categories = [
   "Electronics",
   "Men's",
