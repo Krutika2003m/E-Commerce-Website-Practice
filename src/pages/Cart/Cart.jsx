@@ -24,8 +24,8 @@ function Cart() {
     });
 
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
+    localStorage.setItem("cart", JSON.stringify(updatedCart))
+  }
 
   const decreaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
@@ -81,7 +81,6 @@ function Cart() {
             <div className="cart-items">
               {cart.map((item) => (
                 <div className="cart-item" key={item.id}>
-
                   <img  src={item.thumbnail}  alt={item.title} />
 
                   <div className="cart-info">
@@ -119,9 +118,7 @@ function Cart() {
             </div>
 
             <div className="cart-summary">
-
               <h2>  Total Amount: ${totalPrice.toFixed(2)}  </h2>
-
               <button className="clear-button"  onClick={clearCart} >
                 Clear Cart
               </button>
