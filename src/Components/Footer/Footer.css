@@ -4,9 +4,9 @@
   color: white;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  padding: 25px 60px;
+  padding: 20px 60px;
   box-sizing: border-box;
-  margin-top: auto;
+  margin-top:auto;
 }
 
 .footer-left {
@@ -27,7 +27,7 @@
 }
 
 .footer-left a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .footer-center {

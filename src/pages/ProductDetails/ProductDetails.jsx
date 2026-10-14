@@ -22,6 +22,7 @@ function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState("");
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [message, setMessage] = useState("");
 
 
   useEffect(() => {
@@ -110,8 +111,7 @@ function ProductDetails() {
 
     const alreadyAdded = wishlist.some(
       (item) => item.id === product.id
-    );
-
+    )
     if (alreadyAdded) {
       wishlist = wishlist.filter(
         (item) => item.id !== product.id
@@ -120,7 +120,6 @@ function ProductDetails() {
       setIsWishlisted(false);
     } else {
       wishlist.push(product);
-
       setIsWishlisted(true);
     }
 
@@ -130,28 +129,32 @@ function ProductDetails() {
     );
   };
 
-  const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+ const handleAddToCart = () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    const existingProduct = cart.find(
-      (item) => item.id === product.id
-    );
+  const existingProduct = cart.find(
+    (item) => item.id === product.id
+  );
 
-    if (existingProduct) {
-      existingProduct.quantity += quantity;
-    } else {
-      cart.push({
-        ...product,
-        quantity: quantity,
-      });
-    }
+  if (existingProduct) {
+    existingProduct.quantity += quantity;
+  } else {
+    cart.push({
+      ...product,
+      quantity: quantity,
+    });
+  }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("cart", JSON.stringify(cart));
 
-    window.dispatchEvent(new Event("cartUpdated"));
+  window.dispatchEvent(new Event("cartUpdated"));
 
-    navigate("/cart");
-  };
+  setMessage("Product added to cart successfully!");
+
+  setTimeout(() => {
+    setMessage("");
+  }, 2000);
+};
 
   if (loading) {
     return (
@@ -326,10 +329,14 @@ function ProductDetails() {
 
           </div>
 
-          <button
-            className="add-cart"
-            onClick={handleAddToCart}
-          >
+          {message && (
+  <div className="success-message">
+    ✓ {message}
+  </div>
+)}
+
+
+          <button  className="add-cart"  onClick={handleAddToCart}  >
             Add to Cart
           </button>
 
@@ -337,10 +344,8 @@ function ProductDetails() {
       </div>
 
       <div className="extra-product-info">
-
         <h2>Product Information</h2>
-
-        <div className="info-grid">
+          <div className="info-grid">
 
           <div>
             <strong>SKU</strong>
@@ -365,10 +370,8 @@ function ProductDetails() {
         </div>
 
         <div className="tags-section">
-
           <h3>Tags</h3>
-
-          <div className="tags">
+              <div className="tags">
 
             {product.tags.map((tag, index) => (
 
@@ -379,11 +382,9 @@ function ProductDetails() {
             ))}
 
           </div>
-
         </div>
 
         <div className="dimensions-section">
-
           <h3>Dimensions</h3>
 
           <p>
@@ -404,7 +405,6 @@ function ProductDetails() {
         </div>
 
         <div className="reviews-section">
-
           <h2>Customer Reviews</h2>
 
           {product.reviews.map((review, index) => (
@@ -443,29 +443,20 @@ function ProductDetails() {
             <div className="recommended-section">
 
               <h2>Recommended Products</h2>
-
               <div className="recommended-products">
 
                 {recommendedProducts.map((item) => (
 
-                  <div
-                    className="recommended-card"
-                    key={item.id}
-                  >
+                  <div  className="recommended-card" key={item.id}  >
 
                     <Link
-                      to={`/products/${item.id}`}
-                    >
+                      to={`/products/${item.id}`}  >
 
-                      <img
-                        src={item.thumbnail}
-                        alt={item.title}
-                      />
+                      <img  src={item.thumbnail}  alt={item.title}  />
 
                     </Link>
 
                     <h3>{item.title}</h3>
-
                     <p className="recommended-price">
                       ${item.price}
                     </p>
@@ -474,10 +465,7 @@ function ProductDetails() {
                       ⭐ {item.rating}
                     </p>
 
-                    <Link
-                      to={`/products/${item.id}`}
-                      className="recommended-button"
-                    >
+                    <Link  to={`/products/${item.id}`}  className="recommended-button"  >
                       View Details
                     </Link>
 

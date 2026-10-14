@@ -7,6 +7,7 @@ function Header() {
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const navigate = useNavigate();
 
   const getCartCount = () => {
@@ -20,6 +21,12 @@ function Header() {
     setCartCount(count);
   };
 
+  const getWishlistCount = () => {
+  const wishlist =
+    JSON.parse(localStorage.getItem("wishlist")) || [];
+
+  setWishlistCount(wishlist.length);
+};  
   useEffect(() => {
     if (search.trim() === "") {
       setProducts([]);
@@ -46,39 +53,33 @@ function Header() {
     };
   }, []);
 
-  // Search button
   const handleSearch = () => {
     if (search.trim() === "") {
       return;
     }
 
-    navigate(`/products?search=${search}`);
+    navigate(`/products?search=${search}`)
     setProducts([]);
   };
 
   return (
     <header className="header">
 
-      <Link to="/" className="logo">
-        ShopEasy
-      </Link>
+      <Link to="/" className="logo">  ShopEasy</Link>
 
-      <Link to="/" className="home">
-        Home
-      </Link>
+      <Link to="/" className="home">  Home </Link>
 
-      <Link to="/products" className="products-link">
-        Products
-      </Link>
+     <Link to="/products" className="products-link">  Products </Link>
 
       <div className="search">
-
         <input  type="text"  placeholder="Search products"  value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <button onClick={handleSearch}>  Search  </button>
 
+
+       
         {products.length > 0 && (
           <div className="search-results">
 
@@ -102,18 +103,13 @@ function Header() {
         <FaHeart className="heart" />
       </Link>
 
-      <Link to="/orders" className="orders-link">
-        Orders
-      </Link>
-
-      <Link to="/cart" className="cart">
-
+      <Link to="/orders" className="orders-link"> Orders </Link>
+      
+       <Link to="/cart" className="cart">
         <FaShoppingCart />
 
         {cartCount > 0 && (
-          <span className="cart-count">
-            {cartCount}
-          </span>
+          <span className="cart-count">  {cartCount}  </span>
         )}
 
       </Link>

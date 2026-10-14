@@ -1,0 +1,247 @@
+.about-page {
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+
+.about-hero {
+  text-align: center;
+  background-color: white;
+  padding: 60px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.about-hero h1 {
+  font-size: 38px;
+  color: #222;
+  margin-bottom: 15px;
+}
+
+.about-hero p {
+  color: #666;
+  font-size: 17px;
+  margin-bottom: 25px;
+}
+
+.shop-btn {
+  display: inline-block;
+  padding: 11px 25px;
+  background-color: #cf6f6f;
+  color: white;
+  text-decoration: none;
+  border-radius: 7px;
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+.shop-btn:hover {
+  background-color: #444;
+}
+
+
+/* About Section */
+
+.about-section {
+  max-width: 1050px;
+  margin: auto;
+  padding: 55px 30px;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-text h2 {
+  font-size: 28px;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.about-text p {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.about-highlight {
+  background-color: white;
+  padding: 35px 25px;
+  text-align: center;
+  border-radius: 12px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.about-highlight svg {
+  font-size: 38px;
+  color: #cf6f6f;
+  margin-bottom: 15px;
+}
+
+.about-highlight h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.about-highlight p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+.offer-section {
+  background-color: white;
+  padding: 55px 30px;
+}
+
+.offer-section > h2 {
+  text-align: center;
+  font-size: 28px;
+  color: #222;
+  margin-bottom: 35px;
+}
+
+.offer-container {
+  max-width: 1050px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.offer-card {
+  padding: 25px 18px;
+  text-align: center;
+
+  border: 1px solid #eee;
+  border-radius: 10px;
+
+  transition: 0.2s ease;
+}
+
+.offer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.offer-card svg {
+  font-size: 28px;
+  color: #cf6f6f;
+  margin-bottom: 15px;
+}
+
+.offer-card h3 {
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+
+.offer-card p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+.mission-section {
+  text-align: center;
+  padding: 55px 30px;
+  background-color: #f7f7f7;
+}
+
+.mission-section h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.mission-section p {
+  max-width: 800px;
+  margin: auto;
+  color: #666;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+
+/* Why Choose Us */
+
+.why-section {
+  background-color: white;
+  padding: 55px 30px;
+}
+
+.why-section h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.why-container {
+  max-width: 850px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.why-container div {
+  background-color: #f7f7f7;
+  padding: 15px 20px;
+  border-radius: 7px;
+  color: #555;
+  font-size: 15px;
+}
+
+
+@media (max-width: 768px) {
+
+  .about-hero h1 {
+    font-size: 32px;
+  }
+
+  .about-section {
+    grid-template-columns: 1fr;
+    padding: 45px 25px;
+  }
+
+  .offer-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .about-hero {
+    padding: 45px 20px;
+  }
+
+  .about-hero h1 {
+    font-size: 28px;
+  }
+
+  .about-section {
+    padding: 40px 20px;
+  }
+
+  .offer-section {
+    padding: 40px 20px;
+  }
+
+  .offer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .why-section {
+    padding: 40px 20px;
+  }
+
+  .why-container {
+    grid-template-columns: 1fr;
+  }
+
+}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../Components/Header/Header";
-import "./order.css";
+import "./Order.css";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -21,88 +21,88 @@ function Orders() {
     loadOrders();
   }, []);
 
- const cancelOrder = (orderId) => {
-  const confirmCancel = window.confirm(
-    "Are you sure you want to cancel this order?"
+  const cancelOrder = (orderId) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this order?"
+    );
+
+    if (!confirmCancel) {
+      return;
+    }
+
+    const updatedOrders = orders.map((order) =>
+      order.orderId === orderId
+        ? { ...order, status: "Cancelled" }
+        : order
+    );
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(updatedOrders)
+    );
+
+    setOrders(updatedOrders);
+
+    alert("Order cancelled successfully!");
+  };
+
+  const filteredOrders = orders.filter((order) =>
+    activeTab === "placed"
+      ? order.status !== "Cancelled"
+      : order.status === "Cancelled"
   );
-
-  if (!confirmCancel) {
-    return;
-  }
-
-  const updatedOrders = orders.map((order) =>
-    order.orderId === orderId
-      ? { ...order, status: "Cancelled" }
-      : order
-  );
-
-  localStorage.setItem(
-    "orders",
-    JSON.stringify(updatedOrders)
-  );
-
-  setOrders(updatedOrders);
-
-  alert("Order cancelled successfully!");
-};
-
-const filteredOrders = orders.filter((order) =>
-  activeTab === "placed"
-    ? order.status !== "Cancelled"
-    : order.status === "Cancelled"
-);
 
   return (
     <>
       <Header />
 
       <div className="orders-page">
-<div className="orders-title-row">
-  <h1>My Orders</h1>
-  <div className="order-tabs">
-    <button
-      className={activeTab === "placed" ? "tab-btn active" : "tab-btn"}
-      onClick={() => setActiveTab("placed")}  >
-      Placed Orders
-    </button>
+        <div className="orders-title-row">
+          <h1>My Orders</h1>
+          <div className="order-tabs">
+            <button
+              className={activeTab === "placed" ? "tab-btn active" : "tab-btn"}
+              onClick={() => setActiveTab("placed")}  >
+              Placed Orders
+            </button>
 
-    <button
-      className={activeTab === "cancelled" ? "tab-btn active" : "tab-btn"}
-      onClick={() => setActiveTab("cancelled")}  >
-      Cancelled Orders
-    </button>
-  </div>
-</div>
+            <button
+              className={activeTab === "cancelled" ? "tab-btn active" : "tab-btn"}
+              onClick={() => setActiveTab("cancelled")}  >
+              Cancelled Orders
+            </button>
+          </div>
+        </div>
 
         {filteredOrders.length === 0 ? (
           <div className="no-orders">
 
-  <h2>
-    {activeTab === "placed"
-      ? "No Placed Orders"
-      : "No Cancelled Orders"}
-  </h2>
+            <h2>
+              {activeTab === "placed"
+                ? "No Placed Orders"
+                : "No Cancelled Orders"}
+            </h2>
 
-  <p>
-    {activeTab === "placed"
-      ? "You have not placed any orders yet."
-      : "You do not have any cancelled orders."}
-  </p>
+            <p>
+              {activeTab === "placed"
+                ? "You have not placed any orders yet."
+                : "You do not have any cancelled orders."}
+            </p>
 
-  {activeTab === "placed" && (
-    <Link to="/products" className="shop-btn">
-      Continue Shopping
-    </Link>
-  )}
+            {activeTab === "placed" && (
+              <Link to="/products" className="shop-btn">
+                Continue Shopping
+              </Link>
+            )}
 
-</div>
+          </div>
         ) : (
 
           <div className="orders-container">
 
-           {filteredOrders.map((order) => (
+            {filteredOrders.map((order) => (
 
-              <div  className="order-card"
+              <div className="order-card"
                 key={order.orderId}
               >
 
@@ -123,13 +123,24 @@ const filteredOrders = orders.filter((order) =>
                   {order.items &&
                     order.items.map((item) => (
 
-                      <div  className="order-product"  key={item.id} >
-                        <img  src={item.thumbnail} alt={item.title} />
+                      <div className="order-product" key={item.id} >
+                        <img
+                          src={item.thumbnail || item.image || item.images?.[0]}
+                          alt={item.title || item.name}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+
                         <div className="product-info">
-                          <h4>  {item.title}  </h4>
-                          <p>  Quantity: {item.quantity}  </p>
-                          <p> Price: ₹{item.price} </p>
+                          <h4>
+                            {item.title || item.name || item.productTitle || "Product Name"}
+                          </h4>
+
+                          <p>Quantity: {item.quantity}</p>
+                          <p>Price: ₹{item.price}</p>
                         </div>
+
 
                         <strong>
                           ₹
@@ -207,7 +218,7 @@ const filteredOrders = orders.filter((order) =>
 
                 {order.status !== "Cancelled" && (
                   <div className="order-actions">
-                    <button  className="cancel-order-btn"
+                    <button className="cancel-order-btn"
                       onClick={() => cancelOrder(order.orderId)} >
                       Cancel Order
                     </button>

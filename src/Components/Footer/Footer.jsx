@@ -7,7 +7,7 @@ function Footer() {
     <footer className="footer">
 
       <div className="footer-left">
-          <h3>About Us</h3>
+         <Link to="/about"> <h3>About Us</h3></Link>
           <Link to="/products">  Products  </Link>
       </div>
 

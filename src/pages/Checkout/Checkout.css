@@ -294,3 +294,20 @@ body {
     height: 55px;
   }
 }
+
+
+.payment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.payment input {
+  accent-color: #ab7e7e;
+}
+

@@ -32,7 +32,9 @@ function Wishlist() {
       <Header />
 
       <div className="wishlist-page">
-        <h1>My Wishlist</h1>
+<div className="wishlist-title">
+  <h1>My Wishlist</h1>
+</div>
 
         {wishlist.length === 0 ? (
           <div className="empty-wishlist">
@@ -46,11 +48,7 @@ function Wishlist() {
           </div>
         ) : (
           <>
-            <p>
-              {wishlist.length} product
-              {wishlist.length > 1 ? "s" : ""} in your wishlist
-            </p>
-
+            
             <div className="wishlist-container">
               {wishlist.map((product) => (
                 <div

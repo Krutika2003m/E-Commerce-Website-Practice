@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../Components/Header/Header";
-import "./Checkout.css";
+import { useNavigate } from "react-router-dom"
+import Header from "../../Components/Header/Header"
+import "./Checkout.css"
 
 function Checkout() {
 
@@ -15,30 +15,28 @@ function Checkout() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
-
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [payment, setPayment] = useState("");
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
 
   useEffect(() => {
-  const cartData =
-    JSON.parse(localStorage.getItem("cart")) || [];
-  setCart(cartData);
+    const cartData =
+      JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(cartData);
 
-  const savedAddresses =
-    JSON.parse(localStorage.getItem("addresses")) || [];
+    const savedAddresses =
+      JSON.parse(localStorage.getItem("addresses")) || [];
+    setAddresses(savedAddresses);
 
-  setAddresses(savedAddresses);
+    if (savedAddresses.length > 0) {
+      setSelectedAddress(savedAddresses[0].id);
+    }
 
-  if (savedAddresses.length > 0) {
-    setSelectedAddress(savedAddresses[0].id);
-  }
-
-}, []);
+  }, []);
 
   const subtotal = cart.reduce(
     (total, item) =>
@@ -84,6 +82,7 @@ function Checkout() {
       return;
     }
 
+
     const newAddress = {
       id: Date.now(),
       name: name,
@@ -94,12 +93,17 @@ function Checkout() {
       pincode: pincode,
     };
 
-    setAddresses([
-      ...addresses,
-      newAddress
-    ]);
+    const updatedAddresses = [...addresses, newAddress];
+
+    setAddresses(updatedAddresses);
+
+    localStorage.setItem(
+      "addresses",
+      JSON.stringify(updatedAddresses)
+    );
 
     setSelectedAddress(newAddress.id);
+
 
     clearForm();
     setShowForm(false);
@@ -115,7 +119,6 @@ function Checkout() {
     setCity(item.city);
     setState(item.state);
     setPincode(item.pincode);
-
     setEditId(item.id);
     setShowForm(true);
     setError("");
@@ -166,44 +169,25 @@ function Checkout() {
 
     });
 
-  setAddresses(updatedAddresses);
+    setAddresses(updatedAddresses);
 
-localStorage.setItem(
-  "addresses",
-  JSON.stringify(updatedAddresses)
-);
+    localStorage.setItem(
+      "addresses",
+      JSON.stringify(updatedAddresses)
+    );
 
-clearForm();
-setShowForm(false);
-setError("");
-};
-
-  const placeOrder = () => {
-  setError("");
-  setSuccess("");
+    clearForm();
+    setShowForm(false);
+    setError("");
+  };
 
 
-  if (cart.length === 0) {
-    setError("Your cart is empty.");
-    return;
-  }
-
-  
-  if (!selectedAddress) {
-    setError("Please select a delivery address.");
-    return;
-  }
-
-  if (!payment) {
-    setError("Please select a payment method.");
-    return;
-  }
-
+ 
+const saveOrder = (paymentDetails = {}) => {
   const selectedAddressData = addresses.find(
     (item) => item.id === selectedAddress
   );
 
-  
   const newOrder = {
     orderId: "ORD" + Date.now(),
     date: new Date().toLocaleDateString(),
@@ -214,6 +198,7 @@ setError("");
     subtotal: subtotal,
     delivery: delivery,
     total: total,
+    ...paymentDetails,
   };
 
   const existingOrders =
@@ -221,19 +206,175 @@ setError("");
 
   existingOrders.push(newOrder);
 
-  localStorage.setItem(
-    "orders",
-    JSON.stringify(existingOrders)
-  );
-
+  localStorage.setItem("orders", JSON.stringify(existingOrders));
   localStorage.removeItem("cart");
 
+  setCart([]);
   setSuccess("Order placed successfully!");
 
-  setTimeout(() => {
+    setTimeout(() => {
     navigate("/orders");
-  }, 2000);
+  }, 3000);
 };
+
+
+  const placeOrder = async () => {
+    setError("");
+    setSuccess("");
+
+    if (cart.length === 0) {
+      setError("Your cart is empty.");
+      return;
+    }
+
+    if (!selectedAddress) {
+      setError("Please select a delivery address.");
+      return;
+    }
+
+    if (!payment) {
+      setError("Please select a payment method.");
+      return;
+    }
+
+    if (paymentLoading) {
+      return;
+    }
+
+    if (payment === "razorpay") {
+      await handleRazorpayPayment();
+      return;
+    }
+
+    // Preserve existing Cash on Delivery behavior
+    saveOrder({
+      paymentStatus: "Pending",
+    });
+  };
+
+
+
+  const handleRazorpayPayment = async () => {
+    try {
+      setPaymentLoading(true);
+      setError("");
+      setSuccess("");
+
+      // Load Razorpay Checkout
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+
+          script.src =
+            "https://checkout.razorpay.com/v1/checkout.js";
+
+          script.onload = resolve;
+          script.onerror = () =>
+            reject(new Error("Unable to load Razorpay Checkout"));
+
+          document.body.appendChild(script);
+        });
+      }
+
+      // Create an order through your backend
+      const orderResponse = await fetch(
+        "http://localhost:5000/create-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: total,
+          }),
+        }
+      );
+
+      const orderData = await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        throw new Error(
+          orderData.message || "Unable to create payment order"
+        );
+      }
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "ShopEasy",
+        description: "ShopEasy Order Payment",
+        order_id: orderData.orderId,
+
+        handler: async function (response) {
+          try {
+            const verifyResponse = await fetch(
+              "http://localhost:5000/verify-payment",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(response),
+              }
+            );
+
+            const verifyData = await verifyResponse.json();
+
+            if (!verifyResponse.ok || !verifyData.success) {
+              setError(
+                "Payment verification failed. Your order was not saved as paid."
+              );
+              return;
+            }
+
+            saveOrder({
+              paymentStatus: "Paid",
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+            });
+          } catch (error) {
+            console.error("Payment verification error:", error);
+
+            setError(
+              "Could not verify payment. Please check the payment status before trying again."
+            );
+          } finally {
+            setPaymentLoading(false);
+          }
+        },
+
+        modal: {
+          ondismiss: function () {
+            setPaymentLoading(false);
+            setError("Payment was cancelled.");
+          },
+        },
+
+        theme: {
+          color: "#ab7e7e",
+        },
+      };
+
+      const razorpayWindow = new window.Razorpay(options);
+
+      razorpayWindow.on("payment.failed", function (response) {
+        console.error("Razorpay payment failed:", response.error);
+
+        setPaymentLoading(false);
+        setError("Payment failed. Please try again.");
+      });
+
+      razorpayWindow.open();
+    } catch (error) {
+      console.error("Razorpay error:", error);
+
+      setError(error.message || "Unable to start Razorpay payment.");
+      setPaymentLoading(false);
+    }
+  };
+
+
 
   return (
     <>
@@ -283,7 +424,8 @@ setError("");
 
               </div>
 
-              <p>  <b>{item.name}</b>  </p>
+
+              <p><b>{item.name}</b></p>
 
               <p>  {item.address}, {item.city}  </p>
 
@@ -324,31 +466,29 @@ setError("");
                 }
               />
 
-              <input  type="text"  placeholder="Address"  value={address}
+              <input type="text" placeholder="Address" value={address}
                 onChange={(e) =>
                   setAddress(e.target.value)
                 }
               />
 
-              <input  type="text"  placeholder="City"  value={city}
+              <input type="text" placeholder="City" value={city}
                 onChange={(e) =>
                   setCity(e.target.value)
                 }
               />
 
-              <input  type="text"  placeholder="State"  value={state}
+              <input type="text" placeholder="State" value={state}
                 onChange={(e) =>
                   setState(e.target.value)
                 }
               />
 
-              <input  type="text"  placeholder="Pincode"  maxLength="6"  value={pincode}
+              <input type="text" placeholder="Pincode" maxLength="6" value={pincode}
                 onChange={(e) =>
-                  setPincode(
-                    e.target.value.replace(
-                      /\D/g,
-                      ""
-                    )
+                  setPincode(e.target.value.replace(/\D/g,
+                    ""
+                  )
                   )
                 }
               />
@@ -362,16 +502,14 @@ setError("");
               </button>
 
 
-              <button
-                className="cancel-btn"  onClick={() => {
-                  clearForm();  setShowForm(false);  setError("");
+              <button className="cancel-btn"
+                onClick={() => {
+                  clearForm(); setShowForm(false); setError("");
                 }}
               >
                 Cancel
-              </button>
-
+              </button> 
             </div>
-
           )}
 
         </div>
@@ -379,49 +517,33 @@ setError("");
         <div className="card">
           <h2>2. Payment Method</h2>
           <label className="payment">
-            <input type="radio" name="payment" value="cod" checked={payment === "cod"}
-              onChange={(e) =>
-                setPayment(e.target.value)
-              }
-            />
+            <input type="radio" name="payment" value="cod"  checked={payment === "cod"}
+              onChange={(e) => setPayment(e.target.value)}  />
             Cash on Delivery
           </label>
 
-
           <label className="payment">
-            <input  type="radio"  name="payment"  value="upi"  checked={payment === "upi"}
-              onChange={(e) =>
-                setPayment(e.target.value)
-              }
+            <input type="radio" name="payment" value="razorpay"  checked={payment === "razorpay"}
+              onChange={(e) => setPayment(e.target.value)}
             />
-            UPI
+            Pay Online with Razorpay
           </label>
 
-          <label className="payment">
-
-            <input  type="radio"  name="payment"  value="card"  checked={payment === "card"}
-              onChange={(e) =>
-                setPayment(e.target.value)
-              }
-            />
-            Credit / Debit Card
-
-          </label>
-
+          {payment === "razorpay" && (
+            <div className="payment-details">  </div>
+          )}
         </div>
+
 
         <div className="card">
           <h2>3. Order Summary</h2>
-
           {cart.length === 0 ? (
-
             <p className="no-address">  Your cart is empty.  </p>
           ) : (
-
             <>
               {cart.map((item) => (
-                <div  className="product"  key={item.id}   >
-                  <img  src={item.thumbnail}  alt={item.title}  />
+                <div className="product" key={item.id}   >
+                  <img src={item.thumbnail} alt={item.title} />
 
                   <div className="product-info">
                     <h4>  {item.title}</h4>
@@ -429,26 +551,14 @@ setError("");
                     <p>  ₹{item.price}  </p>
                   </div>
 
-                  <strong>
-                    ₹
-                    {(
-                      item.price *
-                      item.quantity
-                    ).toFixed(2)}
-                  </strong>
+                  <strong>  ₹  {(item.price * item.quantity).toFixed(2)}  </strong>
                 </div>
-
               ))}
 
               <div className="price">
-                <p> <span>Subtotal</span>
-                <b> ₹{subtotal.toFixed(2)} </b>  </p>
-
-                <p> <span>Delivery</span>
-                <b> ₹{delivery.toFixed(2)} </b>  </p>
-
-                <h3>  <span>Total</span>
-                <b> ₹{total.toFixed(2)}  </b>  </h3>
+                <p> <span>Subtotal</span>  <b> ₹{subtotal.toFixed(2)} </b>  </p>
+                <p> <span>Delivery</span>  <b> ₹{delivery.toFixed(2)} </b>  </p>
+                <h3>  <span>Total</span>  <b> ₹{total.toFixed(2)}  </b>  </h3>
               </div>
 
               {error && (
@@ -458,27 +568,24 @@ setError("");
               {success && (
                 <div className="success-popup">
                   <div className="success-box">
-
-                    <div className="success-icon">
-                      ✓
-                    </div>
+                    <div className="success-icon">  ✓  </div>
                     <h2>Order Placed Successfully!</h2>
                     <p>Thank you for your order.</p>
-
                   </div>
                 </div>
               )}
 
-              <button className="place-order" onClick={placeOrder}>
-                Place Order
+              <button  className="place-order"
+                onClick={placeOrder}  disabled={paymentLoading} >
+                {paymentLoading
+                  ? "Processing Payment..."
+                  : payment === "razorpay"
+                    ? `Pay ₹${total.toFixed(2)} with Razorpay`
+                    : "Place Order"}
               </button>
-
             </>
-
           )}
-
         </div>
-
       </div>
     </>
   );

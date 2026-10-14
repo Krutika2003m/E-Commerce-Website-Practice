@@ -64,12 +64,12 @@ function Products() {
     categoryFromURL || "all"
   );
 
-  const [selectedBrand, setSelectedBrand] = useState("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [sortBy, setSortBy] = useState("default");
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 8;
+  const [selectedBrand, setSelectedBrand] = useState("all")
+  const [minPrice, setMinPrice] = useState("")
+  const [maxPrice, setMaxPrice] = useState("")
+  const [sortBy, setSortBy] = useState("default")
+  const [currentPage, setCurrentPage] = useState(1)
+  const productsPerPage = 8
 
 const [wishlist, setWishlist] = useState(() => {
   return JSON.parse(localStorage.getItem("wishlist")) || [];
@@ -229,8 +229,6 @@ const brands = [
       <div className="products-page">
 
         <h1>Products</h1>
-
-        {/* Search Text */}
         {searchText && (
           <h3>
             Search results for: "{searchText}"
@@ -254,10 +252,7 @@ const brands = [
 
               {Object.keys(categoryGroups).map(
                 (category) => (
-                  <option
-                    key={category}
-                    value={category}
-                  >
+                  <option  key={category} value={category}  >
                     {category}
                   </option>
                 )
@@ -268,22 +263,16 @@ const brands = [
           <div className="filter-group">
             <label>Brand</label>
 
-            <select
-              value={selectedBrand}
+            <select value={selectedBrand}
               onChange={(e) => {
                 setSelectedBrand(e.target.value);
                 setCurrentPage(1);
               }}
             >
-              <option value="all">
-                All Brands
-              </option>
+              <option value="all">  All Brands  </option>
 
               {brands.map((brand) => (
-                <option
-                  key={brand}
-                  value={brand}
-                >
+                <option  key={brand}  value={brand}  >
                   {brand}
                 </option>
               ))}
@@ -293,10 +282,7 @@ const brands = [
           <div className="filter-group">
             <label>Min Price</label>
 
-            <input
-              type="number"
-              placeholder="Min price"
-              value={minPrice}
+            <input  type="number"  placeholder="Min price"  value={minPrice}
               onChange={(e) => {
                 setMinPrice(e.target.value);
                 setCurrentPage(1);
@@ -306,11 +292,7 @@ const brands = [
 
           <div className="filter-group">
             <label>Max Price</label>
-
-            <input
-              type="number"
-              placeholder="Max price"
-              value={maxPrice}
+            <input  type="number"   placeholder="Max price"  value={maxPrice}
               onChange={(e) => {
                 setMaxPrice(e.target.value);
                 setCurrentPage(1);
@@ -322,38 +304,26 @@ const brands = [
           <div className="filter-group">
             <label>Sort By</label>
 
-            <select
-              value={sortBy}
+            <select  value={sortBy}
               onChange={(e) => {
                 setSortBy(e.target.value);
                 setCurrentPage(1);
               }}
             >
-              <option value="default">
-                Default
-              </option>
+              <option value="default">  Default  </option>
 
-              <option value="price-low-high">
-                Price: Low → High
-              </option>
+              <option value="price-low-high">  Price: Low → High  </option>
 
-              <option value="price-high-low">
-                Price: High → Low
-              </option>
+              <option value="price-high-low">  Price: High → Low  </option>
 
             </select>
           </div>
-
         </div>
 
-        {/* Product Count */}
-        <p>
-          Showing {filteredProducts.length} products
-        </p>
+        <p>   Showing {filteredProducts.length} products  </p>
 
         {/* Products */}
         <div className="product-container">
-
           {filteredProducts.length === 0 ? (
             <h2>No products found</h2>
           ) : (
@@ -371,29 +341,15 @@ const brands = [
     <FaHeart />
   </button>
 
-  <img
-    src={product.thumbnail}
-    alt={product.title}
-  />
+  <img  src={product.thumbnail}  alt={product.title}  />
 
   <h3>{product.title}</h3>
-
   <p>{product.category}</p>
-
-  <p>
-    Brand: {product.brand || "N/A"}
-  </p>
-
-  <p>
-    Rating: ⭐ {product.rating}
-  </p>
-
+  <p>  Brand: {product.brand || "N/A"}</p>
+  <p> Rating: ⭐ {product.rating} </p>
   <h4>${product.price}</h4>
 
-  <Link
-    to={`/products/${product.id}`}
-    className="view-details"
-  >
+  <Link  to={`/products/${product.id}`}  className="view-details"  >
     View Details
   </Link>
 
@@ -415,12 +371,9 @@ const brands = [
               Previous
             </button>
 
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
+            <span>  Page {currentPage} of {totalPages}  </span>
 
-            <button
-              disabled={currentPage === totalPages}
+            <button  disabled={currentPage === totalPages}
               onClick={() =>
                 setCurrentPage(currentPage + 1)
               }

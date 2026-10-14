@@ -10,6 +10,7 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Orders from "./pages/Orders/Orders";
 import PlacedOrders from "./pages/Orders/PlacedOrders";
 import CancelledOrders from "./pages/Orders/CancelledOrders";
+import About from "./pages/AboutUs/About";
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
 
         <Route path="/orders/cancelled" element={<CancelledOrders />} />
 
+        <Route path="/about" element={<About />} />
+
       </Routes>
 
       <Footer />                                 
@@ -41,3 +44,4 @@ function App() {
 }
 
 export default App;
+
